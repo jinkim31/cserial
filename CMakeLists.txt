@@ -7,13 +7,13 @@ IF (WIN32)
     message("cserial WIN32")
     add_library(cserial SHARED
             cserial/win32/cserial.c
-            cserial/common/cserial_common.c)
+            cserial/common/common.c)
     target_include_directories(cserial PUBLIC win32)
 ELSE()
     message("cserial POSIX")
     add_library(cserial SHARED
             cserial/posix/cserial.c
-            cserial/common/cserial_common.c)
+            cserial/common/common.c)
     target_include_directories(cserial PUBLIC posix)
 ENDIF()
 

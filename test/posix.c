@@ -30,11 +30,10 @@ int main()
     CS_write(handle, msg, 6);
     printf("writing done\n");
 
-
     uint8_t read[100];
 
     printf("%zu bytes available\n", CS_getBytesAvailable(handle));
-    int bytes = CS_read(handle, read, 100);
+    size_t bytes = CS_read(handle, read, 100);
     for(int i=0; i<bytes; i++)
     {
         printf("%c", read[i]);

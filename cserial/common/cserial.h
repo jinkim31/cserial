@@ -2,7 +2,9 @@
 #define CSERIAL_H
 
 #include <stdio.h>
-#include "cserial_common.h"
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
 typedef enum{
     CS_ERROR_NO_ERROR,
@@ -11,6 +13,7 @@ typedef enum{
     CS_ERROR_PERMISSION_DENIED,
     CS_ERROR_UNKNOWN_ERROR,
     CS_ERROR_NO_PORT_TO_CLOSE,
+    CS_ERROR_PORT_ALREADY_BEING_USED,
     CS_ERROR_PORT_ALREADY_OPEN,
     CS_ERROR_PORT_NOT_OPEN,
 }CS_Error;
@@ -27,4 +30,16 @@ CS_Error CS_close(void* handle);
 void CS_write(void* handle, const uint8_t* data, size_t len);
 size_t CS_read(void* handle, uint8_t* buffer, size_t bufferLen);
 size_t CS_getBytesAvailable(void* handle);
+
+typedef struct
+{
+    char** strings;
+    size_t capacity;
+    size_t nString;
+}CS_StringList;
+
+bool CS_StringList_init(CS_StringList* stringList, size_t capacity);
+bool CS_StringList_push(CS_StringList* stringList, char* string);
+void CS_StringList_free(CS_StringList* stringList);
+
 #endif

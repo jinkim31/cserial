@@ -1,3 +1,8 @@
+/*
+ * POSIX implementation of cserial
+ * for MacOS, Linux
+ */
+
 #include "../common/cserial.h"
 #include <dirent.h>
 #include <fcntl.h>
@@ -12,9 +17,9 @@ typedef struct {
     bool isOpen;
 }PosixHandle;
 
-const char CS_PORT_NAME_PREFIX[][10] = {"ttyS", "ttyUSB", "tty."};
 bool isPortName(char* name)
 {
+    const char CS_PORT_NAME_PREFIX[][10] = {"ttyS", "ttyUSB", "tty."};
     int portNamePrefixLen = sizeof(CS_PORT_NAME_PREFIX) / sizeof(CS_PORT_NAME_PREFIX[0]);
     for(int i=0; i<portNamePrefixLen; i++)
     {
@@ -100,11 +105,13 @@ CS_Error CS_open(void *handle, const char *porName, const CS_PortConfig *portCon
 
     // open port
     pHandle->serialPort = open(fileStr, O_RDWR  | O_NDELAY);
+
+    // lock file descriptor
     fcntl(pHandle->serialPort, F_SETFL, 0);
     if(flock(pHandle->serialPort, LOCK_EX | LOCK_NB) == -1) {
-        printf("Serial port with file descriptor is already locked by another process.");
-        return 1;
+        return CS_ERROR_PORT_ALREADY_BEING_USED;
     }
+
     // free file name string
     free(fileStr);
 
