@@ -1,7 +1,5 @@
-#include <dirent.h>
-#include <stdio.h>
 #include <string.h>
-#include "../cserial/common/cserial.h"
+#include "../cserial/cserial.h"
 #include <time.h>
 
 int main()
