@@ -1,43 +1,36 @@
 #include <string.h>
 #include "../cserial/cserial.h"
-#include <time.h>
+#include <windows.h>
 
 int main()
 {
-    void* handle = CS_createHandle();
-
-    char** portNames;
-    size_t nPortNames;
-    CS_getPortNames(handle, &portNames, &nPortNames);
-
-    for(int i=0; i<nPortNames; i++)
+    char portNames[100][CS_MAX_PORT_NAME_LEN];
+    size_t nPort;
+    CS_getPortNames(portNames, 100, &nPort);
+    for(int i=0; i<nPort; i++)
     {
         printf("%s\n", portNames[i]);
     }
+
+    CS_Handle* handle = CS_createHandle();
     CS_PortConfig config;
-    if(CS_open(handle, portNames[2], &config) == CS_ERROR_NO_ERROR)
-        printf("Port opened\n");
-    else
+    if(CS_open(handle, "COM4", &config) == CS_ERROR_NO_ERROR)
+        printf("port opened\n");
+
+    CS_write(handle, "hello", 5);
+
+    uint8_t buffer[100];
+    for(int i=0; i<30; i++)
     {
-        printf("Port open failed\n");
-        return 0;
+        size_t receivedBytes = CS_read(handle, buffer, 100);
+        if(receivedBytes > 0)
+        {
+            for(int j=0; j<receivedBytes; j++)
+            {
+                printf("%c", buffer[j]);
+            }
+            Sleep(10);
+        }
     }
-
-    printf("writing\n");
-    unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
-    CS_write(handle, msg, 6);
-    printf("writing done\n");
-
-    uint8_t read[100];
-
-    printf("%zu bytes available\n", CS_getBytesAvailable(handle));
-    size_t bytes = CS_read(handle, read, 100);
-    for(int i=0; i<bytes; i++)
-    {
-        printf("%c", read[i]);
-    }
-
-
     CS_close(handle);
-    CS_destroyHandle(handle);
 }

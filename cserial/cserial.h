@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#define CS_MAX_PORT_NAME_LEN 32
+
 typedef enum{
     CS_ERROR_NO_ERROR,
-    CS_ERROR_NO_PORT_DETECTED,
+    CS_ERROR_INSUFFICIENT_PORT_NAME_BUFFER,
     CS_ERROR_NO_SUCH_PORT,
     CS_ERROR_PERMISSION_DENIED,
     CS_ERROR_UNKNOWN_ERROR,
@@ -19,18 +21,20 @@ typedef enum{
     CS_ERROR_PORT_NOT_OPEN,
 }CS_Error;
 
+typedef struct CS_Handle_ CS_Handle;
+
 typedef struct{
     int baudRate;
 }CS_PortConfig;
 
-void* CS_createHandle();
-void CS_destroyHandle(void *handle);
-CS_Error CS_getPortNames(void *handle, char*** portNames, size_t* nPortNames);
-CS_Error CS_open(void* handle, const char* porName, const CS_PortConfig* portConfig);
-CS_Error CS_close(void* handle);
-void CS_write(void* handle, const uint8_t* data, size_t len);
-size_t CS_read(void* handle, uint8_t* buffer, size_t bufferLen);
-size_t CS_getBytesAvailable(void* handle);
+CS_Handle* CS_createHandle();
+void CS_destroyHandle(CS_Handle *handle);
+CS_Error CS_getPortNames(char (*portNames)[CS_MAX_PORT_NAME_LEN], int nStrings, size_t *nPortNames);
+CS_Error CS_open(CS_Handle* handle, const char* portName, const CS_PortConfig* portConfig);
+CS_Error CS_close(CS_Handle* handle);
+CS_Error CS_write(CS_Handle* handle, const uint8_t* data, size_t len);
+size_t CS_read(CS_Handle* handle, uint8_t* buffer, size_t bufferLen);
+size_t CS_getBytesAvailable(CS_Handle* handle);
 
 typedef struct
 {
